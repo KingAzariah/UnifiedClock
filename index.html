@@ -13,20 +13,12 @@
       color: #003366; /* USPS dark blue */
     }
     header {
-      background: linear-gradient(90deg, #003366, #0073e6); /* USPS blue gradient */
+      background: linear-gradient(90deg, #003366, #d32f2f); /* USPS blue to red gradient */
       color: white;
       text-align: center;
       padding: 1.5rem;
-      font-size: 1.8rem;
+      font-size: 1.5rem;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    header h1 {
-      margin: 0;
-      flex: 1 1 100%;
     }
     .container {
       max-width: 900px;
@@ -39,37 +31,37 @@
     .section {
       margin-bottom: 30px;
       padding: 20px;
-      border: 2px solid #e6f0ff;
+      border: 2px solid #f5dcdc; /* Light red border */
       border-radius: 10px;
       background: #f9fbfd; /* Very light blue */
     }
     .section h2 {
       margin-bottom: 15px;
-      color: #00509e; /* USPS medium blue */
+      color: #d32f2f; /* USPS red */
     }
     input, button {
       padding: 12px;
       margin: 10px 0;
       width: 100%;
-      border: 1px solid #b3d1ff;
+      border: 1px solid #d32f2f; /* Red border */
       border-radius: 6px;
       font-size: 1rem;
       box-sizing: border-box;
     }
     input:focus {
-      border-color: #00509e;
+      border-color: #d32f2f;
       outline: none;
-      box-shadow: 0 0 5px rgba(0, 80, 158, 0.4);
+      box-shadow: 0 0 5px rgba(211, 47, 47, 0.4); /* Red focus effect */
     }
     button {
-      background: linear-gradient(90deg, #00509e, #0073e6);
+      background: linear-gradient(90deg, #00509e, #d32f2f); /* Blue to red gradient */
       color: white;
       border: none;
       cursor: pointer;
       font-weight: bold;
     }
     button:hover {
-      background: #003366;
+      background: #b71c1c; /* Dark red */
     }
     button:active {
       transform: scale(0.98);
@@ -82,6 +74,7 @@
       font-weight: bold;
     }
   </style>
+  
 </head>
 <body>
   <header>
