@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unified Clock</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f8ff; /* Light blue background */
+      color: #003366; /* USPS dark blue */
+    }
+    header {
+      background: linear-gradient(90deg, #003366, #d32f2f); /* USPS blue to red gradient */
+      color: white;
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 1.8rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    .section {
+      margin-bottom: 30px;
+      padding: 20px;
+      border: 2px solid #f5dcdc; /* Light red border */
+      border-radius: 10px;
+      background: #f9fbfd; /* Very light blue */
+    }
+    .section h2 {
+      margin-bottom: 15px;
+      color: #d32f2f; /* USPS red */
+    }
+    input, button {
+      padding: 12px;
+      margin: 10px 0;
+      width: 100%;
+      border: 1px solid #d32f2f; /* Red border */
+      border-radius: 6px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    input:focus {
+      border-color: #d32f2f;
+      outline: none;
+      box-shadow: 0 0 5px rgba(211, 47, 47, 0.4); /* Red focus effect */
+    }
+    button {
+      background: linear-gradient(90deg, #00509e, #d32f2f); /* Blue to red gradient */
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #b71c1c; /* Dark red */
+    }
+    button:active {
+      transform: scale(0.98);
+    }
+    p {
+      font-size: 1rem;
+      color: #003366;
+    }
+    p span {
+      font-weight: bold;
+    }
+  </style>
+  
+</head>
+<body>
+  <header>
+    <h1>UnifiedClock</h1>
+  </header>
+  <div class="container">
+
+    <!-- Time Converter -->
+    <div class="section" id="time-converter">
+      <h2>Time Converter</h2>
+      <label for="standard-time">Enter Time (HH:MM AM/PM or Decimal Time):</label>
+      <input type="text" id="standard-time" placeholder="e.g., 02:45 PM or 14.75">
+      <button onclick="convertTime()">Convert</button>
+      <p id="converted-time">Converted Time: <span>-</span></p>
+    </div>
+
+    <!-- What Time To Come Back Calculator -->
+    <div class="section" id="return-time-calculator">
+      <h2>What Time To Come Back</h2>
+      <label for="current-time">Current Time (HH:MM AM/PM or Decimal Time):</label>
+      <input type="text" id="current-time" placeholder="e.g., 12:30 PM or 13.5">
+      <label for="break-duration">Break Duration (minutes):</label>
+      <input type="number" id="break-duration" placeholder="e.g., 30">
+      <button onclick="calculateReturnTime()">Calculate Return Time</button>
+      <p id="return-time">Return Time: <span>-</span></p>
+    </div>
+
+    <!-- Lunch Timer -->
+    <div class="section" id="lunch-timer">
+      <h2>Lunch Timer</h2>
+      <label for="lunch-duration">Set Lunch Duration (minutes):</label>
+      <input type="number" id="lunch-duration" placeholder="e.g., 30">
+      <button onclick="startLunchTimer()">Start Timer</button>
+      <button onclick="stopLunchTimer()">Stop Timer</button>
+      <p id="timer-display" style="font-family: 'Courier New', monospace; font-size: 2.5rem; text-align: center; color: #00509e;">Time Remaining: <span>-</span></p>
+
+    </div>
+
+  </div>
+
+  <script>
+    // Helper function to parse time strings
+    function parseTimeString(timeString) {
+      const timePattern = /^\d{1,2}:\d{2}\s*(AM|PM)$/i;
+      const decimalPattern = /^\d+(\.\d+)?$/;
+
+      if (timePattern.test(timeString)) {
+        const [_, hours, minutes, period] = timeString.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+        let h = parseInt(hours, 10);
+        const m = parseInt(minutes, 10);
+        if (period.toUpperCase() === 'PM' && h !== 12) h += 12;
+        if (period.toUpperCase() === 'AM' && h === 12) h = 0;
+        return { hours: h, minutes: m };
+      } else if (decimalPattern.test(timeString)) {
+        const decimalTime = parseFloat(timeString);
+        const h = Math.floor(decimalTime);
+        const m = Math.round((decimalTime - h) * 60);
+        return { hours: h, minutes: m };
+      }
+
+      return null;
+    }
+
+    // Convert Standard or Decimal Time to Desired Format
+    function convertTime() {
+      const input = document.getElementById('standard-time').value;
+      const time = parseTimeString(input);
+      if (time) {
+        const decimalTime = (time.hours + time.minutes / 60).toFixed(2);
+        const standardHours = time.hours % 12 || 12;
+        const period = time.hours >= 12 ? 'PM' : 'AM';
+        const formattedTime = `${standardHours}:${time.minutes.toString().padStart(2, '0')} ${period}`;
+
+        document.getElementById('converted-time').innerHTML = `Converted Time: ${decimalTime} hours (Decimal), ${formattedTime} (Standard)`;
+      } else {
+        alert('Invalid time format. Please use HH:MM AM/PM or Decimal Time.');
+      }
+    }
+
+    // Calculate Return Time
+    function calculateReturnTime() {
+      const currentTime = document.getElementById('current-time').value;
+      const breakDuration = parseInt(document.getElementById('break-duration').value);
+      const time = parseTimeString(currentTime);
+
+      if (time && breakDuration > 0) {
+        let totalMinutes = time.hours * 60 + time.minutes + breakDuration;
+        const returnHours = Math.floor(totalMinutes / 60) % 24;
+        const returnMinutes = totalMinutes % 60;
+        const standardHours = returnHours % 12 || 12;
+        const period = returnHours >= 12 ? 'PM' : 'AM';
+        const formattedTime = `${standardHours}:${returnMinutes.toString().padStart(2, '0')} ${period}`;
+        const decimalTime = (returnHours + returnMinutes / 60).toFixed(2);
+
+        document.getElementById('return-time').innerHTML = `Return Time: ${formattedTime} (Standard), ${decimalTime} hours (Decimal)`;
+      } else {
+        alert('Invalid input. Please check your time and break duration.');
+      }
+    }
+
+    // Lunch Timer
+    let timerInterval;
+    function startLunchTimer() {
+      const duration = parseInt(document.getElementById('lunch-duration').value);
+      if (isNaN(duration) || duration <= 0) {
+        alert('Please enter a valid duration in minutes.');
+        return;
+      }
+      clearInterval(timerInterval);
+      let timeRemaining = duration * 60;
+      timerInterval = setInterval(() => {
+        const minutes = Math.floor(timeRemaining / 60);
+        const seconds = timeRemaining % 60;
+        document.getElementById('timer-display').innerHTML = `Time Remaining: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+        timeRemaining--;
+        if (timeRemaining < 0) {
+          clearInterval(timerInterval);
+          alert('Lunch break is over!');
+        }
+      }, 1000);
+    }
+
+    function stopLunchTimer() {
+      clearInterval(timerInterval);
+      document.getElementById('timer-display').innerHTML = 'Time Remaining: -';
+    }
+  </script>
+</body>
+</html>
